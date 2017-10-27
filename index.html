@@ -19,19 +19,53 @@
 
   <body itemscope itemtype="http://schema.org/TechArticle">
     <div id="sidebar-wrapper">
-      <!-- At the moment we don't have a logo...
-           <a href="http://dev.stephendiehl.com/hask/" class="logo">
-             <img src="img/haskell_logo.svg" alt="Haskell Logo">
-           </a>
-          -->
+      <a href="https://abooij.github.io/wiwikwlhott/" class="logo">
+        <img src="logo.svg" alt="Logo">
+      </a>
       <button id="toggle-sidebar">
         Menu
       </button>
       <ul class="sidebar-nav">
 <ul>
 <li><a href="#changelog">Changelog</a></li>
-<li><a href="#models-of-hott">Models of HoTT</a><ul>
-<li><a href="#infty1-categories"><span class="math inline">∞<sup>1</sup></span>-categories</a></li>
+<li><a href="#variants-of-hott">Variants of HoTT</a><ul>
+<li><a href="#book-hott">Book HoTT</a></li>
+<li><a href="#cubical-type-theory">Cubical type theory</a></li>
+<li><a href="#hott-as-an-dsl">HoTT as an DSL</a></li>
+<li><a href="#impredicative-prop-propositional-resizing">Impredicative prop / propositional resizing</a></li>
+<li><a href="#hott-as-an-approach-to-mltt">HoTT as an approach to MLTT</a></li>
+</ul></li>
+<li><a href="#proof-assistants">Proof assistants</a><ul>
+<li><a href="#coq">Coq</a></li>
+<li><a href="#cubicaltt">cubicaltt</a></li>
+<li><a href="#normalization">Normalization</a></li>
+<li><a href="#libraries">Libraries</a></li>
+</ul></li>
+<li><a href="#meta-theory">Meta-theory</a><ul>
+<li><a href="#topology">Topology</a></li>
+<li><a href="#homotopy">Homotopy</a></li>
+<li><a href="#paths-and-continuity">Paths and continuity</a></li>
+</ul></li>
+<li><a href="#general-confusion-arising-from-names-of-definitions">General confusion arising from names of definitions</a><ul>
+<li><a href="#constructors-versus-elements-versus-terms">Constructors versus elements versus terms</a></li>
+<li><a href="#translating-claims-in-natural-language-to-type-theory">Translating claims in natural language to type theory</a></li>
+<li><a href="#types-as-spaces">Types as spaces</a></li>
+<li><a href="#sets">Sets</a></li>
+</ul></li>
+<li><a href="#type-theoretical-features">Type-theoretical features</a><ul>
+<li><a href="#higher-inductive-types">Higher-inductive types</a></li>
+<li><a href="#inductionrecursion-inductionrecursion">{induction,recursion}-{induction,recursion}</a></li>
+<li><a href="#initial-algebras">Initial algebras</a></li>
+<li><a href="#coinduction">Coinduction</a></li>
+</ul></li>
+<li><a href="#category-theory">Category theory</a><ul>
+<li><a href="#topos-logic-versus-hott">Topos logic versus HoTT</a></li>
+<li><a href="#formalising-categories">Formalising categories</a></li>
+</ul></li>
+<li><a href="#semantics">Semantics</a><ul>
+<li><a href="#categories-with-families">Categories with families</a></li>
+<li><a href="#fibrations">Fibrations</a></li>
+<li><a href="#simplicial-sets">Simplicial sets</a></li>
 </ul></li>
 </ul>
       </ul>
@@ -47,6 +81,8 @@
         <span class="version">0.1</span>
         </p>
 <p>Auke Booij</p>
+<p>This document is intended to refer to concepts one may not be aware of on a first reading of the HoTT book, and give a crude, possible unhelpful intuition for them.</p>
+<p><strong>Warning</strong>: I did not check for correctness. This document may be counterproductive. You didn't get these things from me.</p>
 <h2 id="changelog">Changelog</h2>
 <p><strong>0.1</strong></p>
 <p>First sections:</p>
@@ -54,8 +90,100 @@
 <li>???</li>
 </ul>
 <hr/>
-<h1 id="models-of-hott">Models of HoTT</h1>
-<h2 id="infty1-categories"><span class="math inline">∞<sup>1</sup></span>-categories</h2>
+<h1 id="variants-of-hott">Variants of HoTT</h1>
+<h2 id="book-hott">Book HoTT</h2>
+<p>Book HoTT is the type theory described in the HoTT book. It is intensional MLTT with a hierarchy of universes indexed by positive numerals, and additionally:</p>
+<ul>
+<li>univalence as an axiom (and function extensionality as a theorem),</li>
+<li><span class="math inline"><em>n</em></span>-truncation,</li>
+<li>suspension types,</li>
+<li>pushouts,</li>
+<li>set quotients,</li>
+<li>the free Cauchy completion of the rationals <span class="math inline"><strong>R</strong><sub><em>C</em></sub></span>,</li>
+</ul>
+<p>where the computation rules for HITs is given definitionally for points but propositionally for higher constructors.</p>
+<h2 id="cubical-type-theory">Cubical type theory</h2>
+<p>Cubical type theory is a type theory for which univalence is a theorem. It adds an interval <em>pretype</em> which is used to define identity types. This interval is necessarily not a type.</p>
+<p>Cubical type theory was implemented in the <strong>cubicaltt</strong> proof assistant and the agda <strong>--cubical</strong> mode.</p>
+<p>Although univalence is a theorem, the normal form is huge (megabytes), although it is argued that this is due to the proof rather than the design of cubical type theory.</p>
+<h2 id="hott-as-an-dsl">HoTT as an DSL</h2>
+<p>Dan Licata argues we should think of HoTT as a language to which we add features depending on how we plan to use it, in the same way that we write specialized programming languages for specific use-cases. For example, cubical type theory is a domain-specific language for programming with Kan cubical sets, and real-cohesive HoTT is a language for programming topological spaces. Schulman and Riehl have a language for programming <span class="math inline">(∞,1)</span>-categories.</p>
+<h2 id="impredicative-prop-propositional-resizing">Impredicative prop / propositional resizing</h2>
+<p>The principle that there is only one type of propositions, and it is a member of <span class="math inline">𝒰<sub>0</sub></span>: so all types of propositions are equal, and it is a type in the lowest universe.</p>
+<p>Assuming this principle, the set of types of any universe is a topos.</p>
+<h2 id="hott-as-an-approach-to-mltt">HoTT as an approach to MLTT</h2>
+<h1 id="proof-assistants">Proof assistants</h1>
+<h2 id="coq">Coq</h2>
+<ul>
+<li>tactic language is just a way to construct type-theoretical terms: can get term out of proof by tactics</li>
+</ul>
+<h2 id="cubicaltt">cubicaltt</h2>
+<ul>
+<li>interval is abstract (as opposed to, say, an interval of reals): cubical set (though necessarily <em>not</em> Kan, see semantics section)</li>
+</ul>
+<h2 id="normalization">Normalization</h2>
+<h2 id="libraries">Libraries</h2>
+<ul>
+<li>UniMath</li>
+<li>HoTT/HoTT coq library</li>
+<li>HoTT-Agda</li>
+<li>cubical agda library</li>
+<li>examples/ directory in cubicaltt repository</li>
+<li>lean</li>
+<li>various scientists' personal libraries</li>
+<li></li>
+</ul>
+<h1 id="meta-theory">Meta-theory</h1>
+<h2 id="topology">Topology</h2>
+<p>HoTT is <em>not</em> a internal language for topology. TODO: say something about modalities that is correct.</p>
+<h2 id="homotopy">Homotopy</h2>
+<p>Within the HoTT community, &quot;homotopy theory&quot; refers to abstract homotopy theory in the sense of, for example, Quillen model categories, or more generally homotopy categories. The category of topological spaces and continuous maps is one such model category. However, it is not clear if HoTT is an internal language for <em>all</em> model categories. In particular, the &quot;homotopy&quot; of HoTT does not (necessarily) refer to the homotopies of point-set topology.</p>
+<h2 id="paths-and-continuity">Paths and continuity</h2>
+<ul>
+<li>continuity of functions on the reals or other metric spaces</li>
+</ul>
+<h1 id="general-confusion-arising-from-names-of-definitions">General confusion arising from names of definitions</h1>
+<h2 id="constructors-versus-elements-versus-terms">Constructors versus elements versus terms</h2>
+<p>To say that something is a <em>constructor</em> of a type means that the type was defined inductively, and that you are picking one of the options specifying its datatype. For example, <span class="math inline"><strong>N</strong></span> has exactly <em>two</em> constructors: <span class="math inline">0</span> and <span class="math inline"><em>S</em></span>.</p>
+<p>To say that something is an <em>element</em> of a type means that it is a variable or expression whose type is <span class="math inline"><strong>N</strong></span>. But that means that, in a certain context, you can have an element of type <span class="math inline"><strong>0</strong></span>: for example in the context <span class="math inline"><em>x</em> : <strong>0</strong></span>, we have the element <span class="math inline"><em>x</em></span> of type <span class="math inline"><strong>0</strong></span>.</p>
+<p>Finally, <em>term</em> is a strictly syntactic notion. As a first approximation, something is a term if it is a string of characters that, when inserted in a proof assistant, would parse, and have a certain type.</p>
+<h2 id="translating-claims-in-natural-language-to-type-theory">Translating claims in natural language to type theory</h2>
+<ul>
+<li>there seems to be some miscommunication regarding which statements by HoTTist are internal and which ones are metatheoretical, but I can't make this precise right now.</li>
+</ul>
+<h2 id="types-as-spaces">Types as spaces</h2>
+<p>There are (at least) two different notion of &quot;space&quot; and (at least) two different &quot;circles&quot;.</p>
+<p>First of all, every type is <em>thought of</em> as a space: and so the HIT <span class="math inline"><em>S</em><sup>1</sup></span> freely generated by a basepoint and a path on that basepoint is thought of as a homotopical circle.</p>
+<p>Secondly, there is a certain subset of the real plane <span class="math inline"><strong>R</strong><sup>2</sup></span> (taking <span class="math inline"><strong>R</strong></span> to be, for example, the dedekind reals) that represents a circle, namely the subtype of points with radius 1.</p>
+<p>These two circles are completely unrelated, unless you add extra syntax or axioms, such as in real-cohesive HoTT.</p>
+<h2 id="sets">Sets</h2>
+<ul>
+<li>ZFC sets</li>
+<li>Sets as 0-types</li>
+<li>hierarchies of sets inside types</li>
+</ul>
+<h1 id="type-theoretical-features">Type-theoretical features</h1>
+<h2 id="higher-inductive-types">Higher-inductive types</h2>
+<h2 id="inductionrecursion-inductionrecursion">{induction,recursion}-{induction,recursion}</h2>
+<h2 id="initial-algebras">Initial algebras</h2>
+<h2 id="coinduction">Coinduction</h2>
+<h1 id="category-theory">Category theory</h1>
+<h2 id="topos-logic-versus-hott">Topos logic versus HoTT</h2>
+<ul>
+<li>toposes as models for types of h-level 0</li>
+<li>impredicativity</li>
+</ul>
+<h2 id="formalising-categories">Formalising categories</h2>
+<h1 id="semantics">Semantics</h1>
+<h2 id="categories-with-families">Categories with families</h2>
+<ul>
+<li>necessary to provide set of types, since necessarily cannot make all maps types: extensionality.</li>
+</ul>
+<h2 id="fibrations">Fibrations</h2>
+<h2 id="simplicial-sets">Simplicial sets</h2>
+<ul>
+<li>presentation in terms of coface and codegeneracy maps is equivalent to saying &quot;take all order-preserving morphisms&quot;</li>
+</ul>
       </div>
     </div>
 
