@@ -60,7 +60,6 @@
 </ul></li>
 <li><a href="#category-theory">Category theory</a><ul>
 <li><a href="#topos-logic-versus-hott">Topos logic versus HoTT</a></li>
-<li><a href="#formalising-categories">Formalising categories</a></li>
 </ul></li>
 <li><a href="#semantics">Semantics</a><ul>
 <li><a href="#categories-with-families">Categories with families</a></li>
@@ -123,6 +122,22 @@
 </ul>
 <h1 id="proof-assistants">Proof assistants</h1>
 <h2 id="coq">Coq</h2>
+<p>Coq consists of several layers of programming language. The most famous one is the tactic language that is used to prove theorems. But since theorems are interpreted by types, really tactics just construct terms. For example:</p>
+<pre><code>Definition logeq_both_false {X Y : UU} : ¬X -&gt; ¬Y -&gt; (X &lt;-&gt; Y).
+Proof.
+  intros ? ? nx ny.
+  split.
+  - intros x. induction (nx x).
+  - intros y. induction (ny y).
+Defined.
+
+Print logeq_both_false.</code></pre>
+<p>prints:</p>
+<pre><code>logeq_both_false =
+λ (X Y : UU) (nx : ¬ X) (ny : ¬ Y),
+(λ (x : X) (e:=nx x), empty_rect (λ _ : ∅, Y) e),, (λ (y : Y) (e:=ny y), empty_rect (λ _ : ∅, X) e)
+     : ∏ X Y : UU, ¬ X → ¬ Y → X &lt;-&gt; Y</code></pre>
+<p>(<code>empty_rect</code> is the induction principle for <span class="math inline"><strong>0</strong></span>.)</p>
 <ul>
 <li>tactic language is just a way to construct type-theoretical terms: can get term out of proof by tactics</li>
 </ul>
@@ -133,6 +148,9 @@
 <li>earlier iteration: cubical</li>
 </ul>
 <h2 id="normalization">Normalization</h2>
+<ul>
+<li>minor gotcha: even if your particular flavor of hott is strongly normalizing (so that all terms reduce to a unique normal form), there are still types without decidable equality, because there is no map inside type theory that computes normal forms of arbitrary terms. find a way to say this without hopping back and forth between meta-theoretical and internal statements.</li>
+</ul>
 <h2 id="libraries">Libraries</h2>
 <ul>
 <li>UniMath</li>
@@ -157,25 +175,31 @@
 <h2 id="constructors-versus-elements-versus-terms">Constructors versus elements versus terms</h2>
 <p>To say that something is a <em>constructor</em> of a type <span class="math inline"><em>A</em></span> means that the type <span class="math inline"><em>A</em></span> was defined inductively, and that you are picking one of the options specifying its datatype. For example, <span class="math inline"><strong>N</strong></span> has exactly <em>two</em> constructors: <span class="math inline">0</span> and <span class="math inline"><em>S</em></span>. But since, for example, <span class="math inline"><em>S</em></span> has type <span class="math inline"><strong>N</strong> → <strong>N</strong></span>, constructors of a type are not always elements of that type.</p>
 <p>To say that something is an <em>element</em> of a type <span class="math inline"><em>A</em></span> means that it is a variable or expression whose type is <span class="math inline"><em>A</em></span>. But that means that, in some non-trivial context, you can have an element of type <span class="math inline"><strong>0</strong></span>: for example in the context <span class="math inline"><em>x</em> : <strong>0</strong></span>, we have the element <span class="math inline"><em>x</em></span> of type <span class="math inline"><strong>0</strong></span>.</p>
-<p>Confusingly, even in the context <span class="math inline"><em>x</em> : <strong>0</strong></span>, where we have the element <span class="math inline"><em>x</em></span> of type <span class="math inline"><strong>0</strong></span>, we can show that <span class="math inline"><strong>0</strong></span> does not have any elements, because that claim translates to <span class="math inline">¬<strong>0</strong></span>, that is, <span class="math inline"><strong>0</strong> → <strong>0</strong></span>, which is inhabited by the identity function at <span class="math inline"><strong>0</strong></span>.</p>
+<p>Confusingly, even in the context <span class="math inline"><em>x</em> : <strong>0</strong></span>, where we have the element <span class="math inline"><em>x</em></span> of type <span class="math inline"><strong>0</strong></span>, we can show that <span class="math inline"><strong>0</strong></span> does not have any elements, because the claim &quot;<span class="math inline"><em>A</em></span> does not have any elements&quot; is formalised as <span class="math inline">¬<em>A</em></span>, that is, <span class="math inline"><em>A</em> → <strong>0</strong></span>, and <span class="math inline"><strong>0</strong> → <strong>0</strong></span> is indeed inhabited (by the identity function).</p>
+<p><em>Point</em> is a synonym for <em>element</em>.</p>
 <p>Finally, <em>term</em> is a strictly syntactic notion. As a first approximation, something is a term if it is a string of characters that, when inserted in a proof assistant, would parse, and have a certain type. There are no terms of type <span class="math inline"><strong>0</strong></span> (unless HoTT turns out to be inconsistent).</p>
 <h2 id="translating-claims-in-natural-language-to-type-theory">Translating claims in natural language to type theory</h2>
 <ul>
-<li>there seems to be some miscommunication regarding which statements by HoTTist are internal and which ones are metatheoretical, but I can't make this precise right now.</li>
+<li>there seems to be some miscommunication regarding which statements by HoTTist are internal and which ones are metatheoretical, but I can't find the right words to make this precise right now.</li>
 </ul>
 <h2 id="types-as-spaces">Types as spaces</h2>
 <p>There are (at least) two different notion of &quot;space&quot; and (at least) two different &quot;circles&quot;.</p>
 <p>First of all, every type is <em>thought of</em> as a space: and so the HIT <span class="math inline"><em>S</em><sup>1</sup></span> freely generated by a basepoint and a path on that basepoint is thought of as a homotopical circle. The space-like behavior is given by the type theory, and can be probed using identity types.</p>
 <p>Secondly, there is a certain subset of the real plane <span class="math inline"><strong>R</strong><sup>2</sup></span> (taking <span class="math inline"><strong>R</strong></span> to be, for example, the dedekind reals) that represents a circle, namely the subtype of points with radius 1. The space-like behavior of such spaces <em>internal to the theory</em> is given by whatever notion of space we are interested in: for example, <span class="math inline"><strong>R</strong><sup>2</sup></span> is often studies as a metric space with a metric <span class="math inline"><em>d</em> : <strong>R</strong><sup>2</sup> × <strong>R</strong><sup>2</sup> → <strong>R</strong></span>.</p>
 <p>These two circles are completely unrelated, unless you add extra syntax or axioms, such as in real-cohesive HoTT.</p>
-<ul>
-<li>continuity and provability: we can't prove that all two points on the circle are equal, even though there is a path between any two points, because we can't continuously pick out a path.</li>
-</ul>
+<p>This can be terribly confusing. For example, the fact that every map in HoTT lifts to a map on the identity types (expressing that if two inputs to a function are equal, then we can prove the outputs are equal) is explained in the HoTT book by saying that this means the function is continuous. So from the HoTT point of view, all functions are &quot;continuous&quot; in that sense. But in the context of constructive analysis <em>inside</em> HoTT, it is not provable that all functions are continuous, and in fact it need not be true, for example if one has the principle of excluded middle.</p>
+<p>Even though the link between types and, say, topolgoical spaces (as defined <em>inside</em> HoTT) is broken, the intuition of the internal theory of those spaces is still used to prove the impossibility of type-theoretical proofs. For example, it is not provable that any two points on the higher-inductive circle are equal, which is somewhat odd since in any drawing of a circle there are at least two obvious paths between any two points <span class="math inline"><em>x</em></span> and <span class="math inline"><em>y</em></span>. As a topological counter-argument, it is said that the path from <span class="math inline"><em>x</em></span> to <span class="math inline"><em>y</em></span> cannot be chosen in a &quot;continuous&quot; way, in the sense that if you rotate <span class="math inline"><em>x</em></span> along the circle one full rotation, you'll have to make a &quot;jump&quot; in your choice of path at some point. But this counter-argument is topological in nature, rather than type-theoretic (although there is a way to make it precise type-theoretically).</p>
+<p>Indeed, proofs about types such as the higher-inductive circle look nothing like their counterparts in topology. Even still, they satisfy <em>some</em> of the same properties: if we define the &quot;homotopy group&quot; of a pointed type correctly, then there is some evidence that the higher-inductive circles have the same homotopy groups as their topological counterparts in classical mathematics. However, some properties are fundamentally different in a seemingly unfixable way: as a theorem stated inside type theory, there is only one map <span class="math inline"><em>S</em><sup>1</sup> → <em>S</em><sup>2</sup></span>, and it is the constant map.</p>
 <h2 id="sets">Sets</h2>
 <p>There are (at least) three notions of sets:</p>
 <ul>
 <li>The objects studied by a theory such as ZFC. We can take intersections of any two such sets, even if this does not make sense from an extensional point of view: for example, we can take the intersection of <span class="math inline"><em>π</em></span> with the graph of <span class="math inline"><em>x</em> ↦ <em>x</em><sup>2</sup></span>, as both objects are sets.</li>
-<li>0-types. The behavior of 0-types is very close to ZFC sets. For example, for a map <span class="math inline"><em>f</em></span> between two 0-types (but not between arbitrary types), the following are equivalent:</li>
+<li>0-types. The behavior of 0-types is very close to ZFC sets. For example, for a map <span class="math inline"><em>f</em></span> between two 0-types (but not between arbitrary types), the following are equivalent:
+<ul>
+<li><span class="math inline"><em>f</em></span> is an injection (equal outputs implies equal inputs).</li>
+<li><span class="math inline"><em>f</em></span> is an embedding (equal inputs is equivalenc to equal outputs).</li>
+<li><span class="math inline"><em>f</em></span> is a monomorphism (with respect to all maps on all types).</li>
+</ul></li>
 <li>A cumulative hierarchy of sets as in e.g. chapter 10.5 of the HoTT book, as an attempt to find a model of an axiomatic set theory like ZFC (although this will likely require choice).</li>
 </ul>
 <h1 id="type-theoretical-features">Type-theoretical features</h1>
@@ -186,9 +210,9 @@
 <h2 id="topos-logic-versus-hott">Topos logic versus HoTT</h2>
 <ul>
 <li>toposes as models for types of h-level 0</li>
-<li>impredicativity</li>
+<li>impredicativity: universe of sets as a topos</li>
+<li><span class="math inline"><em>Σ</em></span>, <span class="math inline"><em>Π</em></span> and prop trunc already in toposes</li>
 </ul>
-<h2 id="formalising-categories">Formalising categories</h2>
 <h1 id="semantics">Semantics</h1>
 <h2 id="categories-with-families">Categories with families</h2>
 <ul>
