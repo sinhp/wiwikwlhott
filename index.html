@@ -37,6 +37,7 @@
 </ul></li>
 <li><a href="#proof-assistants">Proof assistants</a><ul>
 <li><a href="#coq">Coq</a></li>
+<li><a href="#agda">Agda</a></li>
 <li><a href="#cubicaltt">cubicaltt</a></li>
 <li><a href="#normalization">Normalization</a></li>
 <li><a href="#libraries">Libraries</a></li>
@@ -53,7 +54,6 @@
 <li><a href="#sets">Sets</a></li>
 </ul></li>
 <li><a href="#type-theoretical-features">Type-theoretical features</a><ul>
-<li><a href="#higher-inductive-types">Higher-inductive types</a></li>
 <li><a href="#inductionrecursion-inductionrecursion">{induction,recursion}-{induction,recursion}</a></li>
 <li><a href="#initial-algebras">Initial algebras</a></li>
 <li><a href="#coinduction">Coinduction</a></li>
@@ -66,6 +66,7 @@
 <li><a href="#categories-with-families">Categories with families</a></li>
 <li><a href="#fibrations">Fibrations</a></li>
 <li><a href="#simplicial-sets">Simplicial sets</a></li>
+<li><a href="#cubical-sets">Cubical sets</a></li>
 </ul></li>
 </ul>
       </ul>
@@ -109,17 +110,27 @@
 <h2 id="hott-as-an-dsl">HoTT as an DSL</h2>
 <p>Dan Licata argues we should think of HoTT as a language to which we add features depending on how we plan to use it, in the same way that we write specialized programming languages for specific use-cases. For example, cubical type theory is a domain-specific language for programming with Kan cubical sets, and real-cohesive HoTT is a language for programming topological spaces. Schulman and Riehl have a language for programming <span class="math inline">(∞,1)</span>-categories.</p>
 <h2 id="impredicative-prop-propositional-resizing">Impredicative prop / propositional resizing</h2>
-<p>The principle that there is only one type of propositions, and it is a member of <span class="math inline">𝒰<sub>0</sub></span>: so all types of propositions are equal, and it is a type in the lowest universe.</p>
+<p>The principle that there is only one type <span class="math inline"><em>Ω</em></span> of propositions, and it is a member of <span class="math inline">𝒰<sub>0</sub></span>: so all types of propositions <span class="math inline">Prop<sub><em>i</em></sub></span> are equal, and it is a type in the lowest universe.</p>
 <p>Assuming this principle, the set of types of any universe is a topos.</p>
+<p>Assuming this principle, some HITs become definable by impredicative encoding: e.g. truncation as <span class="math inline">∏<sub><em>P</em> : <em>Ω</em></sub>(<em>X</em> → <em>P</em>)→<em>P</em></span>.</p>
+<p>UniMath uses propositional resizing in the foundational files <code>Foundations/PartA.v</code> and <code>Foundations/PartB.v</code> to avoid depending on univalence early.</p>
 <h2 id="hott-as-an-approach-to-mltt">HoTT as an approach to MLTT</h2>
+<p>Parts of HoTT can be developed in intensional MLTT, that is, without assuming univalence, function extensionality, propositional extensionality, or the existence of any HITs. For example:</p>
+<ul>
+<li>The fact that h-levels are cumulative (if <span class="math inline"><em>A</em></span> is an <span class="math inline"><em>n</em></span>-type then it is also an <span class="math inline"><em>n</em> + 1</span>-type) does not require univalence.</li>
+<li>The groupoid laws of identity types and iterated identity types can be proved by simple path inductions.</li>
+<li>Some propositional truncations exist without assuming the existence of any HITs or propositional resizing, such as the type of fixed-points of any constant endomap <span class="math inline"><em>f</em></span> on <span class="math inline"><em>X</em></span>.</li>
+</ul>
 <h1 id="proof-assistants">Proof assistants</h1>
 <h2 id="coq">Coq</h2>
 <ul>
 <li>tactic language is just a way to construct type-theoretical terms: can get term out of proof by tactics</li>
 </ul>
+<h2 id="agda">Agda</h2>
 <h2 id="cubicaltt">cubicaltt</h2>
 <ul>
 <li>interval is abstract (as opposed to, say, an interval of reals): cubical set (though necessarily <em>not</em> Kan, see semantics section)</li>
+<li>earlier iteration: cubical</li>
 </ul>
 <h2 id="normalization">Normalization</h2>
 <h2 id="libraries">Libraries</h2>
@@ -144,26 +155,30 @@
 </ul>
 <h1 id="general-confusion-arising-from-names-of-definitions">General confusion arising from names of definitions</h1>
 <h2 id="constructors-versus-elements-versus-terms">Constructors versus elements versus terms</h2>
-<p>To say that something is a <em>constructor</em> of a type means that the type was defined inductively, and that you are picking one of the options specifying its datatype. For example, <span class="math inline"><strong>N</strong></span> has exactly <em>two</em> constructors: <span class="math inline">0</span> and <span class="math inline"><em>S</em></span>.</p>
-<p>To say that something is an <em>element</em> of a type means that it is a variable or expression whose type is <span class="math inline"><strong>N</strong></span>. But that means that, in a certain context, you can have an element of type <span class="math inline"><strong>0</strong></span>: for example in the context <span class="math inline"><em>x</em> : <strong>0</strong></span>, we have the element <span class="math inline"><em>x</em></span> of type <span class="math inline"><strong>0</strong></span>.</p>
-<p>Finally, <em>term</em> is a strictly syntactic notion. As a first approximation, something is a term if it is a string of characters that, when inserted in a proof assistant, would parse, and have a certain type.</p>
+<p>To say that something is a <em>constructor</em> of a type <span class="math inline"><em>A</em></span> means that the type <span class="math inline"><em>A</em></span> was defined inductively, and that you are picking one of the options specifying its datatype. For example, <span class="math inline"><strong>N</strong></span> has exactly <em>two</em> constructors: <span class="math inline">0</span> and <span class="math inline"><em>S</em></span>. But since, for example, <span class="math inline"><em>S</em></span> has type <span class="math inline"><strong>N</strong> → <strong>N</strong></span>, constructors of a type are not always elements of that type.</p>
+<p>To say that something is an <em>element</em> of a type <span class="math inline"><em>A</em></span> means that it is a variable or expression whose type is <span class="math inline"><em>A</em></span>. But that means that, in some non-trivial context, you can have an element of type <span class="math inline"><strong>0</strong></span>: for example in the context <span class="math inline"><em>x</em> : <strong>0</strong></span>, we have the element <span class="math inline"><em>x</em></span> of type <span class="math inline"><strong>0</strong></span>.</p>
+<p>Confusingly, even in the context <span class="math inline"><em>x</em> : <strong>0</strong></span>, where we have the element <span class="math inline"><em>x</em></span> of type <span class="math inline"><strong>0</strong></span>, we can show that <span class="math inline"><strong>0</strong></span> does not have any elements, because that claim translates to <span class="math inline">¬<strong>0</strong></span>, that is, <span class="math inline"><strong>0</strong> → <strong>0</strong></span>, which is inhabited by the identity function at <span class="math inline"><strong>0</strong></span>.</p>
+<p>Finally, <em>term</em> is a strictly syntactic notion. As a first approximation, something is a term if it is a string of characters that, when inserted in a proof assistant, would parse, and have a certain type. There are no terms of type <span class="math inline"><strong>0</strong></span> (unless HoTT turns out to be inconsistent).</p>
 <h2 id="translating-claims-in-natural-language-to-type-theory">Translating claims in natural language to type theory</h2>
 <ul>
 <li>there seems to be some miscommunication regarding which statements by HoTTist are internal and which ones are metatheoretical, but I can't make this precise right now.</li>
 </ul>
 <h2 id="types-as-spaces">Types as spaces</h2>
 <p>There are (at least) two different notion of &quot;space&quot; and (at least) two different &quot;circles&quot;.</p>
-<p>First of all, every type is <em>thought of</em> as a space: and so the HIT <span class="math inline"><em>S</em><sup>1</sup></span> freely generated by a basepoint and a path on that basepoint is thought of as a homotopical circle.</p>
-<p>Secondly, there is a certain subset of the real plane <span class="math inline"><strong>R</strong><sup>2</sup></span> (taking <span class="math inline"><strong>R</strong></span> to be, for example, the dedekind reals) that represents a circle, namely the subtype of points with radius 1.</p>
+<p>First of all, every type is <em>thought of</em> as a space: and so the HIT <span class="math inline"><em>S</em><sup>1</sup></span> freely generated by a basepoint and a path on that basepoint is thought of as a homotopical circle. The space-like behavior is given by the type theory, and can be probed using identity types.</p>
+<p>Secondly, there is a certain subset of the real plane <span class="math inline"><strong>R</strong><sup>2</sup></span> (taking <span class="math inline"><strong>R</strong></span> to be, for example, the dedekind reals) that represents a circle, namely the subtype of points with radius 1. The space-like behavior of such spaces <em>internal to the theory</em> is given by whatever notion of space we are interested in: for example, <span class="math inline"><strong>R</strong><sup>2</sup></span> is often studies as a metric space with a metric <span class="math inline"><em>d</em> : <strong>R</strong><sup>2</sup> × <strong>R</strong><sup>2</sup> → <strong>R</strong></span>.</p>
 <p>These two circles are completely unrelated, unless you add extra syntax or axioms, such as in real-cohesive HoTT.</p>
-<h2 id="sets">Sets</h2>
 <ul>
-<li>ZFC sets</li>
-<li>Sets as 0-types</li>
-<li>hierarchies of sets inside types</li>
+<li>continuity and provability: we can't prove that all two points on the circle are equal, even though there is a path between any two points, because we can't continuously pick out a path.</li>
+</ul>
+<h2 id="sets">Sets</h2>
+<p>There are (at least) three notions of sets:</p>
+<ul>
+<li>The objects studied by a theory such as ZFC. We can take intersections of any two such sets, even if this does not make sense from an extensional point of view: for example, we can take the intersection of <span class="math inline"><em>π</em></span> with the graph of <span class="math inline"><em>x</em> ↦ <em>x</em><sup>2</sup></span>, as both objects are sets.</li>
+<li>0-types. The behavior of 0-types is very close to ZFC sets. For example, for a map <span class="math inline"><em>f</em></span> between two 0-types (but not between arbitrary types), the following are equivalent:</li>
+<li>A cumulative hierarchy of sets as in e.g. chapter 10.5 of the HoTT book, as an attempt to find a model of an axiomatic set theory like ZFC (although this will likely require choice).</li>
 </ul>
 <h1 id="type-theoretical-features">Type-theoretical features</h1>
-<h2 id="higher-inductive-types">Higher-inductive types</h2>
 <h2 id="inductionrecursion-inductionrecursion">{induction,recursion}-{induction,recursion}</h2>
 <h2 id="initial-algebras">Initial algebras</h2>
 <h2 id="coinduction">Coinduction</h2>
@@ -179,10 +194,19 @@
 <ul>
 <li>necessary to provide set of types, since necessarily cannot make all maps types: extensionality.</li>
 </ul>
+<p>So we want to pick out a certain subset of our maps to represent types over contexts. One naive approach is to just take any category and ask for extra data, so that we can tell types apart from arbitrary maps. There are various definitions one can make here, and most of them are unsatisfying since they are <strong>not</strong> invariant under equivalence of the underlying category. For example, there is no contextual category on the 1-object 1-morphism category, but there <em>is</em> a contextual category in which all objects are terminal.</p>
 <h2 id="fibrations">Fibrations</h2>
+<p>(NB: In category theory, there is the notion of Grothendieck fibration, which is sometimes referred to plainly as a fibration. It is not the same as this concept.)</p>
+<p>In categorical semantics of HoTT, we need to distinguish arbitrary maps between the objects (namely <em>context morphisms</em> or <em>substitutions</em>, since the objects represent contexts) from maps that represent types <em>over</em> a context (as types in a context are represented by maps into that context).</p>
+<p>Usually, we specify this by saying which maps are <em>fibrations</em>, and more generally we show that the category is a model category. So what it means for a certain semantic object to be a fibration depends on the chosen model category structure. For example, in simplicial sets, a map is defined to be a fibration if it is Kan. Because of the importance of the Kan condition, in semantics of type theory, we sometimes refer to the fibrations as <em>Kan fibrations</em>.</p>
+<p>So we say which maps are fibrations, so that we can define a corresponding (say) CwF out of the model category, which has as the types exactly the <em>fibrations</em> into the context.</p>
 <h2 id="simplicial-sets">Simplicial sets</h2>
 <ul>
 <li>presentation in terms of coface and codegeneracy maps is equivalent to saying &quot;take all order-preserving morphisms&quot;</li>
+</ul>
+<h2 id="cubical-sets">Cubical sets</h2>
+<ul>
+<li>various iterations</li>
 </ul>
       </div>
     </div>
